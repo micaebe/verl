@@ -30,7 +30,7 @@ def map_fn(example, idx, process_fn, data_source, ability, split, tokenizer):
     text = process_fn(example)
     tokens = tokenizer(text, return_tensors="pt")
     # TODO: add to config
-    n_prefix_tokens = 1024
+    n_prefix_tokens = 1536
     n_completion_tokens = 1024
     if len(tokens["input_ids"][0]) < n_prefix_tokens + n_completion_tokens:
         # adjust n_prefix_tokens and n_completion_tokens
