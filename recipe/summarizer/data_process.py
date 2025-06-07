@@ -31,7 +31,7 @@ def map_fn(example, idx, process_fn, data_source, ability, split, tokenizer):
     tokens = tokenizer(text, return_tensors="pt")
     # TODO: add to config
     n_prefix_tokens = 1024
-    n_completion_tokens = 1536
+    n_completion_tokens = 1024
     if len(tokens["input_ids"][0]) < n_prefix_tokens + n_completion_tokens:
         # adjust n_prefix_tokens and n_completion_tokens
         n_prefix_tokens = len(tokens["input_ids"][0]) - n_completion_tokens
@@ -45,7 +45,7 @@ def map_fn(example, idx, process_fn, data_source, ability, split, tokenizer):
     input_text = tokenizer.decode(tokens["input_ids"][0][:n_prefix_tokens], skip_special_tokens=True)
     answer_text = tokenizer.decode(tokens["input_ids"][0][n_prefix_tokens:n_prefix_tokens + n_completion_tokens], skip_special_tokens=True)
 
-    prompt = f"Summarize the following text so that it preserves all the information, but is as short as possible. You are allowed to use 128 tokens at most for the final summary.\n\n{input_text}\n\n"
+    prompt = f"Compress the following text (after TEXT:) so that it preserves all the information, but is as short as possible.\n\nTEXT:{input_text}"
     solution = answer_text
 
     data = {
