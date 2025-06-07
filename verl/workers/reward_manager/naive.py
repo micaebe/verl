@@ -28,7 +28,7 @@ class Scorer:
         self.model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen3-0.6B", trust_remote_code=True).cuda()
         self.tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen3-0.6B", trust_remote_code=True)
         self.max_summary_length = 192
-        self.summary_length_bonus = 0.05
+        self.summary_length_bonus = 0.01
 
     def score(self, data_source, solution_str, ground_truth, extra_info):
         import torch.nn.functional as F
