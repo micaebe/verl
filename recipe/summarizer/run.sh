@@ -38,8 +38,8 @@ python3 -m verl.trainer.main_ppo \
     algorithm.use_kl_in_reward=False \
     trainer.critic_warmup=0 \
     trainer.logger=['console','wandb'] \
-    trainer.project_name='summarizer' \
-    trainer.experiment_name='summarizer_rl' \
+    trainer.project_name='compressor' \
+    trainer.experiment_name='rl_compressor' \
     trainer.n_gpus_per_node=2 \
     trainer.nnodes=1 \
     trainer.save_freq=20 \
