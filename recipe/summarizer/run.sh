@@ -13,7 +13,7 @@ python3 -m verl.trainer.main_ppo \
     data.val_files=$DATA_PATH/test.parquet \
     data.train_batch_size=16 \
     data.max_prompt_length=2560 \
-    data.max_response_length=3072 \
+    data.max_response_length=2560 \
     data.filter_overlong_prompts=True \
     data.truncation='error' \
     actor_rollout_ref.model.path=Qwen/Qwen3-0.6B \
