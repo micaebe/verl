@@ -73,8 +73,8 @@ class Scorer:
             if summary_ids.shape[1] > self.max_summary_length:
                 return 0.0
             completion_ids = self.tokenizer(ground_truth, return_tensors="pt").input_ids
-            gold_ids = torch.cat([input_ids, completion_ids], dim=-1)
-            summarizer_ids = torch.cat([summary_ids, completion_ids], dim=-1)
+            gold_ids = torch.cat([input_ids, completion_ids], dim=-1).cuda()
+            summarizer_ids = torch.cat([summary_ids, completion_ids], dim=-1).cuda()
             with torch.no_grad():
                 outputs = self.model(gold_ids)
                 gold_logits = outputs.logits
