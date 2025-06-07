@@ -27,7 +27,7 @@ class Scorer:
         print("Loading model on GPU...")
         self.model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen3-0.6B", trust_remote_code=True).cuda()
         self.tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen3-0.6B", trust_remote_code=True)
-        self.max_summary_length = 256
+        self.max_summary_length = 128
         self.summary_length_bonus = 0.05
 
     def score(self, data_source, solution_str, ground_truth, extra_info):
