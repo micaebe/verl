@@ -11,7 +11,7 @@ python3 -m verl.trainer.main_ppo \
     algorithm.adv_estimator=grpo \
     data.train_files=$DATA_PATH/train.parquet \
     data.val_files=$DATA_PATH/test.parquet \
-    data.train_batch_size=4 \
+    data.train_batch_size=16 \
     data.max_prompt_length=1536 \
     data.max_response_length=3072 \
     data.filter_overlong_prompts=True \
@@ -40,7 +40,7 @@ python3 -m verl.trainer.main_ppo \
     trainer.logger=['console','wandb'] \
     trainer.project_name='summarizer' \
     trainer.experiment_name='summarizer_rl' \
-    trainer.n_gpus_per_node=2 \
+    trainer.n_gpus_per_node=1 \
     trainer.nnodes=1 \
     trainer.save_freq=20 \
     trainer.test_freq=150 \
