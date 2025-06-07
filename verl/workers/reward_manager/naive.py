@@ -86,8 +86,10 @@ class Scorer:
             reward = 1 - summarizer_perplexity / gold_perplexity
             if reward < 0:
                 reward = 0.0
-            summary_length = len(summary_ids[0])
-            bonus = max(0.0, self.summary_length_bonus - (summary_length / self.max_summary_length) * self.summary_length_bonus)
+                bonus = 0.0
+            else:
+                summary_length = len(summary_ids[0])
+                bonus = max(0.0, self.summary_length_bonus - (summary_length / self.max_summary_length) * self.summary_length_bonus)
             reward += bonus
             print(f"Gold Perplexity: {gold_perplexity}, Summarizer Perplexity: {summarizer_perplexity}, Reward: {reward}, Bonus: {bonus}")
             return reward
