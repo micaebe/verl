@@ -30,7 +30,7 @@ def map_fn(example, idx, process_fn, data_source, ability, split, tokenizer):
     text = process_fn(example)
     tokens = tokenizer(text, return_tensors="pt")
     # TODO: add to config
-    n_prefix_tokens = 1024
+    n_prefix_tokens = 768
     n_completion_tokens = 1024
     if len(tokens["input_ids"][0]) < n_prefix_tokens + n_completion_tokens:
         # adjust n_prefix_tokens and n_completion_tokens
@@ -45,7 +45,7 @@ def map_fn(example, idx, process_fn, data_source, ability, split, tokenizer):
     input_text = tokenizer.decode(tokens["input_ids"][0][:n_prefix_tokens], skip_special_tokens=True)
     answer_text = tokenizer.decode(tokens["input_ids"][0][n_prefix_tokens:n_prefix_tokens + n_completion_tokens], skip_special_tokens=True)
 
-    prompt = f"Summarize the following text so that it preserves all the information, but is as short as possible.\n\n{input_text}"
+    prompt = f"Reformulate the following text snippet so that it still preserves all the information in it and that it can act as a natural replacement for the given text snippet, but is as short as possible.\n\n{input_text}"
     solution = answer_text
 
     data = {

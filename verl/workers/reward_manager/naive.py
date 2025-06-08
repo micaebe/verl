@@ -85,7 +85,7 @@ class Scorer:
             gold_perplexity = calc_perplexity(gold_logits, gold_ids)
             summarizer_perplexity = calc_perplexity(summarizer_logits, summarizer_ids)
 
-            reward = 1 - summarizer_perplexity / (gold_perplexity + gold_perplexity / 10)
+            reward = 1 - summarizer_perplexity / (gold_perplexity + gold_perplexity / 6.5)
             if reward < 0:
                 reward = 0.0
                 bonus = 0.0
@@ -115,6 +115,7 @@ class NaiveRewardManager:
         self.num_examine = num_examine  # the number of batches of decoded responses to print to the console
         self.compute_score = compute_score or default_compute_score
         self.reward_fn_key = reward_fn_key
+        self.scorer = Scorer.remote()
 
     def __call__(self, data: DataProto, return_dict=False):
         """We will expand this function gradually based on the available datasets"""
@@ -129,7 +130,7 @@ class NaiveRewardManager:
         reward_tensor = torch.zeros_like(data.batch["responses"], dtype=torch.float32)
         reward_extra_info = defaultdict(list)
 
-        scorer = Scorer.remote()
+        
         futures = []
         call_meta = []
 
@@ -156,7 +157,7 @@ class NaiveRewardManager:
 
             extra_info = data_item.non_tensor_batch.get("extra_info", None)
 
-            ref = scorer.score.remote(
+            ref = self.scorer.score.remote(
                 data_source=data_source,
                 solution_str=response_str,
                 ground_truth=ground_truth,
@@ -166,7 +167,6 @@ class NaiveRewardManager:
             call_meta.append((i, valid_response_length - 1))
 
         scores = ray.get(futures)
-        scorer.shutdown.remote()
 
         for (i, pos), reward in zip(call_meta, scores):
             reward_tensor[i, pos] = reward
