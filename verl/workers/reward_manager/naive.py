@@ -85,7 +85,7 @@ class Scorer:
             gold_perplexity = calc_perplexity(gold_logits, gold_ids)
             summarizer_perplexity = calc_perplexity(summarizer_logits, summarizer_ids)
 
-            shift = max(gold_perplexity / 6.0, 2.5)
+            shift = max(gold_perplexity / 4.0, 3.0)
             reward = 1 - summarizer_perplexity / (gold_perplexity + shift)
             if reward < 0:
                 reward = 0.0
