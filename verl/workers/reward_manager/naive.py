@@ -27,14 +27,16 @@ class Scorer:
         print("Loading model on GPU...")
         self.model = AutoModelForCausalLM.from_pretrained("Qwen/Qwen3-0.6B", trust_remote_code=True).cuda()
         self.tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen3-0.6B", trust_remote_code=True)
-        self.max_summary_length = 64
-        self.summary_length_bonus = 0.05
+        self.max_summary_length = 192
+        self.summary_length_bonus = 0.01
 
     def score(self, data_source, solution_str, ground_truth, extra_info):
         import torch.nn.functional as F
         def calc_perplexity(logits: torch.Tensor,
                     targets: torch.Tensor,
                     mask: torch.Tensor | None = None) -> float:
+            logits = logits[:, :-1, :]
+            targets = targets[:, 1:]
             log_probs = F.log_softmax(logits, dim=-1)                     # (B, T, V)
 
             tgt_log_probs = log_probs.gather(-1, targets.unsqueeze(-1))   # (B, T, 1)
@@ -73,8 +75,8 @@ class Scorer:
             if summary_ids.shape[1] > self.max_summary_length:
                 return 0.0
             completion_ids = self.tokenizer(ground_truth, return_tensors="pt").input_ids
-            gold_ids = torch.cat([input_ids, completion_ids], dim=-1)
-            summarizer_ids = torch.cat([summary_ids, completion_ids], dim=-1)
+            gold_ids = torch.cat([input_ids, completion_ids], dim=-1).cuda()
+            summarizer_ids = torch.cat([summary_ids, completion_ids], dim=-1).cuda()
             with torch.no_grad():
                 outputs = self.model(gold_ids)
                 gold_logits = outputs.logits
@@ -83,11 +85,13 @@ class Scorer:
             gold_perplexity = calc_perplexity(gold_logits, gold_ids)
             summarizer_perplexity = calc_perplexity(summarizer_logits, summarizer_ids)
 
-            reward = 1 - summarizer_perplexity / gold_perplexity
+            reward = 1 - summarizer_perplexity / (gold_perplexity + gold_perplexity / 10)
             if reward < 0:
                 reward = 0.0
-            summary_length = len(summary_ids[0])
-            bonus = max(0.0, self.summary_length_bonus - (summary_length / self.max_summary_length) * self.summary_length_bonus)
+                bonus = 0.0
+            else:
+                summary_length = len(summary_ids[0])
+                bonus = max(0.0, self.summary_length_bonus - (summary_length / self.max_summary_length) * self.summary_length_bonus)
             reward += bonus
             print(f"Gold Perplexity: {gold_perplexity}, Summarizer Perplexity: {summarizer_perplexity}, Reward: {reward}, Bonus: {bonus}")
             return reward
