@@ -45,7 +45,7 @@ def map_fn(example, idx, process_fn, data_source, ability, split, tokenizer):
     input_text = tokenizer.decode(tokens["input_ids"][0][:n_prefix_tokens], skip_special_tokens=True)
     answer_text = tokenizer.decode(tokens["input_ids"][0][n_prefix_tokens:n_prefix_tokens + n_completion_tokens], skip_special_tokens=True)
 
-    prompt = f"Compress the following text (after TEXT:) so that it preserves all the information, but is as short as possible.\n\nTEXT:{input_text}"
+    prompt = f"Summarize the following text so that it preserves all the information, but is as short as possible.\n\n{input_text}"
     solution = answer_text
 
     data = {

@@ -35,6 +35,8 @@ class Scorer:
         def calc_perplexity(logits: torch.Tensor,
                     targets: torch.Tensor,
                     mask: torch.Tensor | None = None) -> float:
+            logits = logits[:, :-1, :]
+            targets = targets[:, 1:]
             log_probs = F.log_softmax(logits, dim=-1)                     # (B, T, V)
 
             tgt_log_probs = log_probs.gather(-1, targets.unsqueeze(-1))   # (B, T, 1)
